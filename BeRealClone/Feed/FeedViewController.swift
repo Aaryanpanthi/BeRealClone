@@ -30,9 +30,6 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
         refreshControl.addTarget(self, action: #selector(onPullToRefresh), for: .valueChanged)
         tableView.insertSubview(refreshControl, at: 0)
-
-        // Add Log Out button
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(onLogoutTapped))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -70,7 +67,7 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         }
     }
 
-    @objc private func onLogoutTapped() {
+    @IBAction func onLogOutTapped(_ sender: Any) {
         User.logout { [weak self] result in
             switch result {
             case .success:

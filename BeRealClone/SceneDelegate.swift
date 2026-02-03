@@ -17,44 +17,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     var window: UIWindow?
-    private var loginObserver: NSObjectProtocol?
-    private var logoutObserver: NSObjectProtocol?
+
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        print("🕵️ SceneDelegate: scene willConnectTo session")
-        // Ensure we have a valid UIWindowScene and create the window explicitly so
-        // snapshotting/scene transitions have a valid window to work with.
-        guard let windowScene = (scene as? UIWindowScene) else { return }
+        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+        guard let _ = (scene as? UIWindowScene) else { return }
 
-        // Create the window and attach to the provided scene.
-        let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
-
-        // If a user is already cached, show feed; otherwise show login.
-        if User.current != nil {
-            print("🕵️ SceneDelegate: User is logged in. Setting root to FeedNavigationController")
-            window.rootViewController = storyboard.instantiateViewController(withIdentifier: Constants.feedNavigationControllerIdentifier)
-        } else {
-            print("🕵️ SceneDelegate: User is NOT logged in. Setting root to LoginNavigationController")
-            window.rootViewController = storyboard.instantiateViewController(withIdentifier: Constants.loginNavigationControllerIdentifier)
-        }
-
-        // Make the window visible and ensure it's the key window.
-        window.makeKeyAndVisible()
-        print("🕵️ SceneDelegate: Window made key and visible")
-
-        // Add observers and keep tokens so we can remove them later.
-        loginObserver = NotificationCenter.default.addObserver(forName: Notification.Name("login"), object: nil, queue: OperationQueue.main) { [weak self] _ in
+        // Add observers
+        NotificationCenter.default.addObserver(forName: Notification.Name("login"), object: nil, queue: OperationQueue.main) { [weak self] _ in
             self?.login()
         }
 
-        logoutObserver = NotificationCenter.default.addObserver(forName: Notification.Name("logout"), object: nil, queue: OperationQueue.main) { [weak self] _ in
+        NotificationCenter.default.addObserver(forName: Notification.Name("logout"), object: nil, queue: OperationQueue.main) { [weak self] _ in
             self?.logOut()
         }
 
-        // Note: we've already handled persisted login above by setting the root VC.
+        // Check for cached user for persisted log in.
+        if User.current != nil {
+            print("🕵️ SceneDelegate: User is logged in. Setting root to FeedNavigationController")
+            // System has already created the window, we just need to set the root VC
+            let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
+            window?.rootViewController = storyboard.instantiateViewController(withIdentifier: Constants.feedNavigationControllerIdentifier)
+        } else {
+             print("🕵️ SceneDelegate: User is NOT logged in. Defaulting to Storyboard entry.")
+        }
     }
 
     private func login() {
@@ -68,43 +57,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     private func logOut() {
         // Log out Parse user.
-        // This will also remove the session from the Keychain, log out of linked services and all future calls to current will return nil.
         User.logout { [weak self] result in
 
             switch result {
             case .success:
-
                 // Make sure UI updates are done on main thread when initiated from background thread.
                 DispatchQueue.main.async {
-
-                    // Instantiate the storyboard that contains the view controller you want to go to (i.e. destination view controller).
                     let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
-
-                    // Instantiate the destination view controller (in our case it's a navigation controller) from the storyboard.
                     let viewController = storyboard.instantiateViewController(withIdentifier: Constants.loginNavigationControllerIdentifier)
-
-                    // Programmatically set the current displayed view controller.
                     self?.window?.rootViewController = viewController
-                    self?.window?.makeKeyAndVisible()
+                    // No need to call makeKeyAndVisible again usually, but doesn't hurt.
                 }
             case .failure(let error):
                 print("❌ Log out error: \(error)")
             }
         }
-
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
-        // Remove observers to avoid dangling UI updates after the scene is disconnected.
-        if let loginObserver = loginObserver {
-            NotificationCenter.default.removeObserver(loginObserver)
-            self.loginObserver = nil
-        }
-        if let logoutObserver = logoutObserver {
-            NotificationCenter.default.removeObserver(logoutObserver)
-            self.logoutObserver = nil
-        }
-
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
         // Release any resources associated with this scene that can be re-created the next time the scene connects.
