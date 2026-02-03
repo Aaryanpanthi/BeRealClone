@@ -7,7 +7,8 @@
 
 import UIKit
 
-// TODO: Pt 1 - Import Parse Swift
+// Import Parse Swift
+import ParseSwift
 
 
 class LoginViewController: UIViewController {
@@ -31,7 +32,20 @@ class LoginViewController: UIViewController {
             return
         }
 
-        // TODO: Pt 1 - Log in the parse user
+        // Log in the parse user
+        User.login(username: username, password: password) { [weak self] result in
+
+            switch result {
+            case .success(let user):
+                print("✅ Successfully logged in as user: \(user)")
+
+                // Post a notification that the user has successfully logged in.
+                NotificationCenter.default.post(name: Notification.Name("login"), object: nil)
+
+            case .failure(let error):
+                self?.showAlert(description: error.localizedDescription)
+            }
+        }
 
     }
 
