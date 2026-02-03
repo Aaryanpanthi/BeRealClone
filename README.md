@@ -34,7 +34,7 @@ The following **additional** features are implemented:
 
 🎥 **Watch the demo**
 
-https://github.com/Aaryanpanthi/Scavenger-Hunt-Project/issues/1#issuecomment-video-url
+https://github.com/Aaryanpanthi/BeRealClone/issues/1
 
 ## Notes
 
