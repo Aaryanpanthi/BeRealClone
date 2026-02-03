@@ -30,11 +30,11 @@ The following **additional** features are implemented:
 - [x] Custom font styling for app branding (Filmotype Jade)
 - [x] Parse backend integration for data persistence
 
-## Video Walkthrough
+## Demo
 
-Here is a reminder on how to embed Loom videos on GitHub. Feel free to remove this reminder once you upload your README. 
+🎥 **Watch the demo**
 
-[Guide](https://www.youtube.com/watch?v=GA92eKlYio4).
+https://github.com/Aaryanpanthi/Scavenger-Hunt-Project/issues/1#issuecomment-video-url
 
 ## Notes
 
