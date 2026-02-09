@@ -42,9 +42,17 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // 1. Create a query to fetch Posts
         // 2. Any properties that are Parse objects are stored by reference in Parse DB and as such need to explicitly use `include_:)` to be included in query results.
         // 3. Sort the posts by descending order based on the created at date
+        // 4. Only show posts created in the past 24 hours
+        // 5. Limit the number of posts to return to 10
+        
+        guard let yesterdayDate = Calendar.current.date(byAdding: .day, value: -1, to: Date()) else {
+             return
+        }
+        
         let query = Post.query()
             .include("user")
             .order([.descending("createdAt")])
+            .where("createdAt" >= yesterdayDate)
             .limit(queryLimit)
 
         // Fetch objects (posts) defined in query (async)

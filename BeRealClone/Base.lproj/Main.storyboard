@@ -28,7 +28,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="dZg-MO-Mf0">
                                         <rect key="frame" x="0.0" y="0.0" width="342" height="180.66666666666666"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Instaparse" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XGx-Ld-H6T">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BeRealClone" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XGx-Ld-H6T">
                                                 <rect key="frame" x="0.0" y="0.0" width="342" height="88.666666666666671"/>
                                                 <fontDescription key="fontDescription" name="FilmotypeJade-Regular" family="Filmotype Jade" pointSize="72"/>
                                                 <nil key="textColor"/>
@@ -213,7 +213,7 @@
             </objects>
             <point key="canvasLocation" x="255" y="-2"/>
         </scene>
-        <!--Instaparse-->
+        <!--BeRealClone By aaryan-->
         <scene sceneID="MCq-ly-0Co">
             <objects>
                 <viewController id="D49-nA-hPQ" customClass="FeedViewController" customModule="BeRealClone" customModuleProvider="target" sceneMemberID="viewController">
@@ -301,7 +301,7 @@
                             <constraint firstAttribute="bottom" secondItem="if7-R7-g8V" secondAttribute="bottom" id="gSb-1R-JSD"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Instaparse" id="LaS-Bo-eDE">
+                    <navigationItem key="navigationItem" title="BeRealClone By aaryan" id="LaS-Bo-eDE">
                         <barButtonItem key="backBarButtonItem" title=" " id="3DH-ur-kyc"/>
                         <barButtonItem key="leftBarButtonItem" title="Log Out" id="Tgq-Yz-eLC">
                             <color key="tintColor" systemColor="labelColor"/>
