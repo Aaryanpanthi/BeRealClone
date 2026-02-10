@@ -48,7 +48,7 @@ The following **additional** features are implemented:
 
 ## Video Walkthrough
 
-[Add your Loom video link here]
+[(https://drive.google.com/file/d/1mn3Rch_lWrdF7pF1TDmQbh3yQPbFyPlm/view?usp=sharing)]
 
 ## Notes
 
