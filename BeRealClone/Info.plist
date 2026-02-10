@@ -33,5 +33,9 @@
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photos to let you share them with friends.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to let you share photos with friends.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to tag your posts with where they were taken.</string>
 </dict>
 </plist>

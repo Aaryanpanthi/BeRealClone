@@ -7,6 +7,7 @@
 
 import UIKit
 import ParseSwift
+import UserNotifications
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -14,16 +15,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         static let loginNavigationControllerIdentifier = "LoginNavigationController"
         static let feedNavigationControllerIdentifier = "FeedNavigationController"
         static let storyboardIdentifier = "Main"
+        static let notificationIdentifier = "bereal-reminder"
     }
 
     var window: UIWindow?
 
-
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
 
         // Add observers
@@ -38,67 +35,89 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Check for cached user for persisted log in.
         if User.current != nil {
             print("🕵️ SceneDelegate: User is logged in. Setting root to FeedNavigationController")
-            // System has already created the window, we just need to set the root VC
             let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
             window?.rootViewController = storyboard.instantiateViewController(withIdentifier: Constants.feedNavigationControllerIdentifier)
+            
+            // Schedule notification reminder for returning users
+            scheduleNotificationReminder()
         } else {
              print("🕵️ SceneDelegate: User is NOT logged in. Defaulting to Storyboard entry.")
         }
     }
 
     private func login() {
-        // Ensure UI updates are performed on the main thread.
         DispatchQueue.main.async { [weak self] in
             let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
             self?.window?.rootViewController = storyboard.instantiateViewController(withIdentifier: Constants.feedNavigationControllerIdentifier)
             self?.window?.makeKeyAndVisible()
+            
+            // Request notification permissions and schedule reminder
+            self?.requestNotificationPermissions()
         }
     }
 
     private func logOut() {
-        // Log out Parse user.
-        User.logout { [weak self] result in
-
-            switch result {
-            case .success:
-                // Make sure UI updates are done on main thread when initiated from background thread.
-                DispatchQueue.main.async {
-                    let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
-                    let viewController = storyboard.instantiateViewController(withIdentifier: Constants.loginNavigationControllerIdentifier)
-                    self?.window?.rootViewController = viewController
-                    // No need to call makeKeyAndVisible again usually, but doesn't hurt.
-                }
-            case .failure(let error):
-                print("❌ Log out error: \(error)")
+        // Remove pending notifications on logout
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Constants.notificationIdentifier])
+        print("🔔 Notifications unregistered")
+        
+        // User.logout is already called by FeedViewController before posting this notification.
+        // SceneDelegate only needs to handle the navigation transition.
+        DispatchQueue.main.async { [weak self] in
+            let storyboard = UIStoryboard(name: Constants.storyboardIdentifier, bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: Constants.loginNavigationControllerIdentifier)
+            self?.window?.rootViewController = viewController
+        }
+    }
+    
+    // MARK: - Notifications
+    
+    private func requestNotificationPermissions() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
+            if let error = error {
+                print("❌ Notification permission error: \(error.localizedDescription)")
+                return
+            }
+            
+            if granted {
+                print("✅ Notification permission granted")
+                self?.scheduleNotificationReminder()
+            } else {
+                print("⚠️ Notification permission denied")
+            }
+        }
+    }
+    
+    private func scheduleNotificationReminder() {
+        let content = UNMutableNotificationContent()
+        content.title = "⚡️ Time to BeReal!"
+        content.body = "Share what you're doing right now with your friends."
+        content.sound = .default
+        
+        // Trigger every 4 hours
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 4 * 60 * 60, repeats: true)
+        
+        let request = UNNotificationRequest(
+            identifier: Constants.notificationIdentifier,
+            content: content,
+            trigger: trigger
+        )
+        
+        // Remove any existing notification before scheduling new one
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [Constants.notificationIdentifier])
+        
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("❌ Failed to schedule notification: \(error.localizedDescription)")
+            } else {
+                print("🔔 Notification reminder scheduled")
             }
         }
     }
 
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
-    }
+    func sceneDidDisconnect(_ scene: UIScene) {}
+    func sceneDidBecomeActive(_ scene: UIScene) {}
+    func sceneWillResignActive(_ scene: UIScene) {}
+    func sceneWillEnterForeground(_ scene: UIScene) {}
+    func sceneDidEnterBackground(_ scene: UIScene) {}
 }

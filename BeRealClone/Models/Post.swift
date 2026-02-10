@@ -25,4 +25,6 @@ struct Post: ParseObject {
     var caption: String?
     var user: User?
     var imageFile: ParseFile?
+    var location: String?
+    var likedBy: [String]?  // Array of user objectIds who liked this post
 }
