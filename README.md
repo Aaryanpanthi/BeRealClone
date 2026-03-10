@@ -48,7 +48,7 @@ The following **additional** features are implemented:
 
 ## Video Walkthrough
 
-[(https://drive.google.com/file/d/1mn3Rch_lWrdF7pF1TDmQbh3yQPbFyPlm/view?usp=sharing)]
+[(https://github.com/Aaryanpanthi/BeRealClone/issues/4)]
 
 ## Notes
 
