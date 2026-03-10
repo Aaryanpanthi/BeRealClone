@@ -128,6 +128,12 @@ class PostCell: UITableViewCell {
     private func configureBlur(for post: Post) {
         guard let blurView = blurView else { return }
 
+        // Never blur the current user's own posts
+        if post.user?.objectId == User.current?.objectId {
+            blurView.isHidden = true
+            return
+        }
+
         if let currentUser = User.current,
            let lastPostedDate = currentUser.lastPostedDate,
            let postCreatedDate = post.createdAt,

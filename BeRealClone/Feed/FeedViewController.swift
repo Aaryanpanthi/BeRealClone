@@ -32,7 +32,8 @@ class FeedViewController: UIViewController, UITableViewDataSource, UITableViewDe
         tableView.delegate = self
         tableView.dataSource = self
         tableView.allowsSelection = false
-        tableView.rowHeight = 520  // BeReal-style layout height
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 520  // BeReal-style layout height
 
         refreshControl.addTarget(self, action: #selector(onPullToRefresh), for: .valueChanged)
         tableView.insertSubview(refreshControl, at: 0)
